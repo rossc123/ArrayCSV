@@ -22,7 +22,40 @@
 const myForm=document.getElementById("myForm");
 const csvFile=document.getElementById("csvFile");
 
+function csvToArray(str,delimiter=","){
+// slice from start of text to the first \n index
+// use split to create an array from string by delimiter
+const headers = str.slice(0,str.indexOf("\n")).split(delimiter);
 
+// slice from \n index + 1 to the end of the text
+// use split to create an array of each csv value row
+const rows = str.slice(str.indexOf("\n")+1).split("\n");
+
+
+/*
+map the rows
+split values from each row into an array
+use headers.reduce to create an object
+object properties derived from headers:values
+the object passed as an element of the array
+*/
+
+const arr= rows.map(function(row){
+    const values= row.split(delimiter);
+    const el = headers.reduce(function(object,header,index){
+
+        object[header] = values[index];
+        return object;
+
+    },{});
+    return el;
+});
+
+// return the array
+console.log(arr);
+return arr;
+
+}
 
 myForm.addEventListener("submit",function(e){
 e.preventDefault();         //prevent default to stop page refreshing when file is submitted
@@ -33,7 +66,8 @@ const reader = new FileReader();
 
 reader.onload=function(event){
    const text = event.target.result;
-   document.write(text);
+   const data = csvToArray(text);
+   document.write(JSON.stringify(data));
 };
 
 reader.readAsText(input)
